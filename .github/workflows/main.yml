@@ -3,15 +3,15 @@ name: .NET
 on:
   push:
     branches: [main]
-
   pull_request:
     branches: [main]
 
 env:
   appName: federated-python-example
+  additionalResorce: ngnix
 
 jobs:
-  build:
+  build-admin:
     runs-on: ubuntu-latest
     steps:
       # checkout the repo
@@ -32,3 +32,25 @@ jobs:
       - run: |
           docker build . -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/$appName:${{ github.sha }}
           docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/$appName:${{ github.sha }}
+  build-second-app:
+    runs-on: ubuntu-latest
+    steps:
+      # checkout the repo
+      - name: "Checkout GitHub Action"
+        uses: actions/checkout@main
+
+      - name: "Login via Azure CLI"
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: "Build and push image"
+        uses: azure/docker-login@v1
+        with:
+          login-server: ${{ secrets.REGISTRY_LOGIN_SERVER }}
+          username: ${{ secrets.REGISTRY_USERNAME }}
+          password: ${{ secrets.REGISTRY_PASSWORD }}
+      - run: |
+          docker build . -f Dockerfile_ngnix -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/$additionalResorce:${{ github.sha }}
+          docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/$additionalResorce:${{ github.sha }}
+
