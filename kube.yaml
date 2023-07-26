@@ -2,17 +2,16 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: graph-py-example
+  name: graph-py-example-app
   labels:
-    app: graph-py-example
+    app: graph-py-example-app
   annotations:
     repository: "https://github.com/vorendu-com/federated-python-example"
     owner: "@llasapg"
-  namespace: "prod"
 spec:
   selector:
     matchLabels:
-      app: graph-py-example
+      app: graph-py-example-app
   revisionHistoryLimit: 1
   replicas: 1
   strategy:
@@ -23,13 +22,13 @@ spec:
   template:
     metadata:
       labels:
-        app: graph-py-example
+        app: graph-py-example-app
       annotations:
         repository: "https://github.com/vorendu-com/federated-python-example"
         owner: "@llasapg"
     spec:
       containers:
-        - name: graph-py-example
+        - name: graph-py-example-app
           image: vorendureg.azurecr.io/federated-python-example:b88d31c02153b61cd7c3e6cc3c9520e223d11be7
           ports:
             - containerPort: 80
@@ -75,41 +74,38 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: graph-py-example
+  name: graph-py-example-service
   annotations:
     repository: "https://github.com/vorendu-com/federated-python-example"
     owner: "@llasapg"
-  namespace: "prod"
 spec:
   type: ClusterIP
   ports:
-    - name: graph-py-example
+    - name: graph-py-example-service
       port: 80
       targetPort: 80
       protocol: TCP
   selector:
-    app: graph-py-example
+    app: graph-py-example-app
 
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: graph-py-example
+  name: graph-py-example-ingress
   annotations:
     repository: "https://github.com/vorendu-com/federated-graph-gateway"
     owner: "@llasapg"
-    kubernetes.io/ingress.class: "nginx"
-    nginx.ingress.kubernetes.io/rewrite-target: /
-  namespace: "prod"
+    kubernetes.io/ingress.class: azure/application-gateway
 spec:
   rules:
-  - host: graph-py-test.vorendu.com
-    http:
-      paths:
-      - pathType: Prefix
-        path: "/"
-        backend:
-          service:
-            name: graph-py-example
-            port:
-              number: 80
+    - host: products.vorendu.com
+      http:
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: graph-py-example-service
+                port:
+                  number: 80
