@@ -1,4 +1,3 @@
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -29,7 +28,7 @@ spec:
     spec:
       containers:
         - name: graph-py-example-app
-          image: vorendureg.azurecr.io/federated-python-example:c42083935b42a0ee9a3c5e1aef7f986749a2dd38
+          image: vorendu.azurecr.io/federated-python-example:80d0593f754accdf344dde62900baec8f5dea5da
           ports:
             - containerPort: 80
               protocol: TCP
@@ -69,41 +68,3 @@ spec:
             tcpSocket:
               host: ""
               port: 80
-
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: graph-py-example-service
-  annotations:
-    repository: "https://github.com/vorendu-com/federated-python-example"
-    owner: "@llasapg"
-spec:
-  selector:
-    app: graph-py-example-app
-  ports:
-    - protocol: TCP
-      port: 80
-      targetPort: 80
-
----
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: graph-py-example-ingress
-  annotations:
-    repository: "https://github.com/vorendu-com/federated-graph-gateway"
-    owner: "@llasapg"
-    kubernetes.io/ingress.class: azure/application-gateway
-spec:
-  rules:
-    - host: products.vorendu.com
-      http:
-        paths:
-          - path: /
-            pathType: ImplementationSpecific
-            backend:
-              service:
-                name: graph-py-example-service
-                port:
-                  number: 80
