@@ -29,7 +29,7 @@ spec:
     spec:
       containers:
         - name: graph-py-example-app
-          image: vorendureg.azurecr.io/federated-python-example:b88d31c02153b61cd7c3e6cc3c9520e223d11be7
+          image: vorendureg.azurecr.io/federated-python-example:c42083935b42a0ee9a3c5e1aef7f986749a2dd38
           ports:
             - containerPort: 80
               protocol: TCP
@@ -79,14 +79,12 @@ metadata:
     repository: "https://github.com/vorendu-com/federated-python-example"
     owner: "@llasapg"
 spec:
-  type: ClusterIP
-  ports:
-    - name: graph-py-example-service
-      port: 80
-      targetPort: 80
-      protocol: TCP
   selector:
     app: graph-py-example-app
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
 
 ---
 apiVersion: networking.k8s.io/v1
