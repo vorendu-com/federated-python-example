@@ -29,6 +29,9 @@ jobs:
           username: ${{ secrets.REGISTRY_USERNAME }}
           password: ${{ secrets.REGISTRY_PASSWORD }}
       - run: |
-          docker build . -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/$appName:${{ github.sha }}
-          docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/$appName:${{ github.sha }}
+          branch_name=$(echo ${{ github.ref }} | sed -e "s/refs\/heads\///")
+          short_sha=$(echo ${{ github.sha }} | cut -c 1-7)
+          version_tag="${branch_name}-${short_sha}"
+          docker build . -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/$appName:${version_tag}
+          docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/$appName:${version_tag}
 

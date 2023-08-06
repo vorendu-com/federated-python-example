@@ -8,7 +8,7 @@ metadata:
     kubernetes.io/ingress.class: nginx
 spec:
   rules:
-    - host: products.vorendu.com
+    - host: graph-py-example.vorendu.com
       http:
         paths:
           - path: /
